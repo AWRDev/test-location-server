@@ -10,9 +10,12 @@
     <p id="status">Нажмите кнопку для получения локации</p>
     <p id="coords"></p>
     <p id="speed"></p>
-    <button onclick="getLocation()">Получить локацию</button>
+    <button onclick="watchLocation()">Получить локацию</button>
 
     <script>
+		function watchLocation(){
+			setInterval(()=>{getLocation()}, 3000)
+		}
         function getLocation() {
             const status = document.getElementById('status');
             const coords = document.getElementById('coords');
