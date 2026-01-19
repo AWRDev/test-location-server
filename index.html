@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Геолокация в браузере</title>
+</head>
+<body>
+    <h1>Данные о локации</h1>
+    <p id="status">Нажмите кнопку для получения локации</p>
+    <p id="coords"></p>
+    <p id="speed"></p>
+    <button onclick="getLocation()">Получить локацию</button>
+
+    <script>
+        function getLocation() {
+            const status = document.getElementById('status');
+            const coords = document.getElementById('coords');
+            const speedEl = document.getElementById('speed');
+
+            if (!navigator.geolocation) {
+                status.textContent = 'Геолокация не поддерживается браузером.';
+                return;
+            }
+
+            status.textContent = 'Запрашиваем разрешение...';
+
+            // Получение текущей позиции (однократно)
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const { latitude, longitude, accuracy, speed } = position.coords;
+                    coords.innerHTML = `Широта: ${latitude.toFixed(6)}<br>Долгота: ${longitude.toFixed(6)}<br>Точность: ${accuracy.toFixed(0)} м<br>Скорость: ${speed ? speed.toFixed(2) + ' м/с' : 'Не доступна'}`;
+                    speedEl.innerHTML = speed ? `Скорость: ${speed.toFixed(2)} м/с` : 'Скорость недоступна';
+                    status.textContent = 'Данные получены!';
+                },
+                (error) => {
+                    switch (error.code) {
+                        case error.PERMISSION_DENIED:
+                            status.textContent = 'Разрешение отклонено.';
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            status.textContent = 'Данные о позиции недоступны.';
+                            break;
+                        case error.TIMEOUT:
+                            status.textContent = 'Превышен таймаут.';
+                            break;
+                        default:
+                            status.textContent = 'Ошибка: ' + error.message;
+                    }
+                },
+                {
+                    enableHighAccuracy: true,  // Высокая точность (GPS)
+                    timeout: 10000,            // 10 сек таймаут
+                    maximumAge: 60000          // Кэш до 1 мин
+                }
+            );
+        }
+    </script>
+</body>
+</html>
